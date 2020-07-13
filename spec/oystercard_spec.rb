@@ -13,6 +13,9 @@ end
 
 describe Oystercard do
   let(:card) { Oystercard.new }
+  let(:sufficient_card) { Oystercard.new(70) }
+  let(:poverty_card) { Oystercard.new(0.99) }
+
   it 'Adds an amount to the balance' do
     expect(card.top_up(25)).to eq(card.balance)
   end
@@ -29,25 +32,19 @@ describe Oystercard do
   it 'Raises an error when there is not enough money' do
     expect { card.touch_out(10) }.to raise_error('Balance is below zero')
   end
-  it 'Touch in with with £1.00 balance and set card to in_use' do
-    card = Oystercard.new(1.00)
-    card.touch_in
-    expect(card.in_use).to eq(true)
+  it 'Touch in with with > £1.00 balance and set card to in_use' do
+    sufficient_card.touch_in
+    expect(sufficient_card.in_use).to eq(true)
   end
   it 'Touch out and deduce balance by £1.00 and sets card to not in_use' do
-    card = Oystercard.new(5.00)
-    expect { card.touch_out }.to change { card.balance }.by(-1.00)
-    expect(card.in_use).to eq(false)
+    expect { sufficient_card.touch_out }.to change { sufficient_card.balance }.by(-1.00)
+    expect(sufficient_card.in_use).to eq(false)
   end
-end
-
-describe Oystercard do
   it 'Card is in_journey when in use' do
     card = Oystercard.new(1.99)
     expect{ card.touch_in }.to change{ card.in_journey? }.to true
   end
   it 'Does not allow touch in when balance is under £1.00' do
-    card = Oystercard.new(0.99)
-    expect { card.touch_in }.to raise_error('Insufficient balance')
+    expect { poverty_card.touch_in }.to raise_error('Insufficient balance')
   end
 end
