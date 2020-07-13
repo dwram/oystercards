@@ -1,52 +1,53 @@
+# frozen_string_literal: true
+
 require_relative '../lib/oystercard'
-max = 90.00
+
 describe Oystercard do
   it { is_expected.to be_an Oystercard }
   it { is_expected.to respond_to :top_up }
   it { expect(subject.balance).to be_an(Float) }
-  it { expect(Oystercard::MAXIMUM_BALANCE).to be(max) }
-  it { expect(subject.maximum_balance).to be(max) }
+  it { expect(Oystercard::MAXIMUM_BALANCE).to be_an(Float) }
+  it { expect(Oystercard::MINIMUM_BALANCE).to be_an(Float) }
+  it { expect(subject.maximum_balance).to be_an(Float) }
 end
 
 describe Oystercard do
-  it 'adds an amount to the balance' do
-    expect(subject.top_up(25)).to eq(subject.balance)
+  let(:card) { Oystercard.new }
+  it 'Adds an amount to the balance' do
+    expect(card.top_up(25)).to eq(card.balance)
   end
-  it 'raises an error upon exceeding maximum via initialisation' do
-    expect{ Oystercard.new(100, 50) }.to raise_error
+  it 'Raises an error upon exceeding maximum via initialisation' do
+    expect { Oystercard.new(100, 50) }.to raise_error('Start balance exceeds your maximum')
   end
-  it 'raises an error upon exceeding maximum via top-up' do
-    card = Oystercard.new
-    expect{ card.top_up(100) }.to raise_error("Exceeded maximum balance: #{card.maximum_balance}")
+  it 'Raises an error upon exceeding maximum via top-up' do
+    expect { card.top_up(100) }.to raise_error("Exceeded maximum balance: #{card.maximum_balance}")
   end
-  it 'deducts ten pounds from the balance' do
-    subject.top_up(10)
-    expect{ subject.touch_out(10) }.to change{subject.balance}.by(-10.00)
+  it 'Deducts £10 from the balance' do
+    card.top_up(10)
+    expect { card.touch_out(10) }.to change { card.balance }.by(-10.00)
   end
-  it 'raises an error when there is not enough money' do
-    expect{ subject.touch_out(10) }.to raise_error
+  it 'Raises an error when there is not enough money' do
+    expect { card.touch_out(10) }.to raise_error('Balance is below zero')
   end
-  it 'set the oystercard in use' do
+  it 'Touch in with with £1.00 balance and set card to in_use' do
     card = Oystercard.new(1.00)
     card.touch_in
     expect(card.in_use).to eq(true)
   end
-  it 'set the oystercard not in use' do
+  it 'Touch out and deduce balance by £1.00 and sets card to not in_use' do
     card = Oystercard.new(5.00)
-    card.touch_out
+    expect { card.touch_out }.to change { card.balance }.by(-1.00)
     expect(card.in_use).to eq(false)
-    expect{ card.touch_out }.to change{card.balance}.by(-1.00)
   end
-  
 end
 
 describe Oystercard do
-  it 'tells us if in use' do
+  it 'Card is in_journey when in use' do
     card = Oystercard.new(1.99)
-    expect(card.touch_in).to be card.in_journey?
+    expect{ card.touch_in }.to change{ card.in_journey? }.to true
   end
-  it 'does not allow a balance under one pound' do
+  it 'Does not allow touch in when balance is under £1.00' do
     card = Oystercard.new(0.99)
-    expect{ card.touch_in }.to raise_error 'Insufficient balance'
+    expect { card.touch_in }.to raise_error('Insufficient balance')
   end
 end
