@@ -9,13 +9,16 @@ describe Oystercard do
   it { expect(Oystercard::MAXIMUM_BALANCE).to be_an(Float) }
   it { expect(Oystercard::MINIMUM_BALANCE).to be_an(Float) }
   it { expect(subject.maximum_balance).to be_an(Float) }
+  it { expect(subject.balance).to be_an(Float) }
+  it { expect(subject.journey).to be_truthy }
+  it { expect(subject.journey).to all(Station) }
 end
 
 describe Oystercard do
   let(:card) { Oystercard.new }
   let(:sufficient_card) { Oystercard.new(70) }
   let(:poverty_card) { Oystercard.new(0.99) }
-
+  let(:station) { double(:station) }
   it 'Adds an amount to the balance' do
     expect(card.top_up(25)).to eq(card.balance)
   end
@@ -46,5 +49,17 @@ describe Oystercard do
   end
   it 'Does not allow touch in when balance is under £1.00' do
     expect { poverty_card.touch_in }.to raise_error('Insufficient balance')
+  end
+  it 'adds a station to journeys upon touch-in' do
+    expect{ sufficient_card.touch_in(station) }.to change{ sufficient_card.journey.size}.by(1)
+    expect(sufficient_card.journey).to include(station)
+  end
+  it 'removes the entry_station value upon touch-out' do
+    sufficient_card.touch_in(station)
+    expect{ sufficient_card.touch_out }.to change{ sufficient_card.entry_station }.to(nil)
+  end
+  it 'adds a new journey with entry and exit station value upon touch-out' do
+    pending("")
+    expect{ sufficient_card.touch_out }.to change{ sufficient_card.journeys.size }.by(1)
   end
 end
