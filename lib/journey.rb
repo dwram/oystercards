@@ -1,18 +1,19 @@
 class Journey
-  attr_reader :journeys, :journey
+  attr_reader :journeys, :current_journey, :entry_station
   PENALTY_FARE = 6
 
   def initialize
-    @journey = []
+    @current_journey = []
     @journeys = Hash.new { |k, v| k[v] = [] }
   end
 
   def start_journey(entry_station)
-    @journey << (@entry_station = entry_station)
+    @current_journey << (@entry_station = entry_station)
   end
 
   def end_journey(exit_station)
-    @journeys['Trips'] << [@entry_station, (@exit_station = exit_station)]
+    @current_journey << (@exit_station = exit_station)
+    @journeys['Trips'] << @current_journey
     @entry_station = nil
   end
 
@@ -20,7 +21,7 @@ class Journey
 
   end
 
-  def is_complete?
+  def in_journey?
     @entry_station ? true : false
   end
 

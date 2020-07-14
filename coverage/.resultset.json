@@ -1,51 +1,12 @@
 {
   "RSpec": {
     "coverage": {
-      "C:/Users/Danie/Desktop/Makers/OysterCards/spec/journey_spec.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          2,
-          null
-        ]
-      },
-      "C:/Users/Danie/Desktop/Makers/OysterCards/lib/journey.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          1,
-          1,
-          null,
-          null,
-          1,
-          0,
-          null,
-          null,
-          1,
-          0,
-          0,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          1,
-          null,
-          null,
-          null,
-          null
-        ]
-      },
       "C:/Users/Danie/Desktop/Makers/OysterCards/spec/oystercard_spec.rb": {
         "lines": [
           null,
           1,
           null,
           1,
-          2,
           2,
           2,
           2,
@@ -99,7 +60,7 @@
           2,
           null,
           1,
-          4,
+          6,
           null,
           1,
           4,
@@ -126,12 +87,13 @@
           1,
           1,
           1,
+          null,
           1,
           null,
-          22,
-          null,
           21,
-          25,
+          null,
+          20,
+          20,
           null,
           null,
           1,
@@ -145,7 +107,7 @@
           11,
           10,
           null,
-          9,
+          10,
           null,
           null,
           1,
@@ -153,18 +115,9 @@
           null,
           5,
           4,
-          4,
           null,
           null,
           1,
-          19,
-          null,
-          null,
-          1,
-          null,
-          1,
-          4,
-          null,
           null,
           1,
           5,
@@ -182,8 +135,40 @@
           1,
           1,
           1,
-          18,
-          18,
+          14,
+          14,
+          null,
+          null,
+          1,
+          14,
+          null,
+          null,
+          null
+        ]
+      },
+      "C:/Users/Danie/Desktop/Makers/OysterCards/lib/journey.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null,
+          1,
+          20,
+          24,
+          null,
+          null,
+          1,
+          10,
+          null,
+          null,
+          1,
+          4,
+          4,
+          4,
+          null,
+          null,
+          1,
+          null,
           null,
           null,
           1,
@@ -192,22 +177,8 @@
           null,
           null
         ]
-      },
-      "C:/Users/Danie/Desktop/Makers/OysterCards/spec/station_spec.rb": {
-        "lines": [
-          1,
-          null,
-          1,
-          2,
-          2,
-          2,
-          2,
-          3,
-          null,
-          null
-        ]
       }
     },
-    "timestamp": 1594686815
+    "timestamp": 1594689542
   }
 }
