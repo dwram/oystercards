@@ -1,12 +1,5 @@
 require_relative './station'
-
-class Journey
-
-  def new_journey(exit_station)
-    @journeys['Trips'] << [@entry_station, (@exit_station = exit_station)]
-  end
-
-end
+require_relative './journey'
 
 class Oystercard
   attr_reader :balance, :maximum_balance, :journeys, :journey, :entry_station
@@ -39,7 +32,6 @@ class Oystercard
 
     fare(amount)
     new_journey(exit_station)
-    @journey_end = Journey.new_journey(exit_station)
     @entry_station = nil
   end
 
