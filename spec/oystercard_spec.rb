@@ -44,7 +44,7 @@ describe Oystercard do
   end
   it 'Touch out and deduce balance by £1.00 and sets card to not in_journey' do
     sufficient_card.touch_in
-    expect { sufficient_card.touch_out }.to change { sufficient_card.balance }.by(-1.00)
+    expect { sufficient_card.touch_out }.to change { sufficient_card.balance }.by(-Oystercard::MINIMUM_BALANCE)
     expect( sufficient_card.journey.in_journey?).to eq(false)
   end
   it 'Card is in_journey when in use' do
@@ -55,7 +55,7 @@ describe Oystercard do
     expect { poverty_card.touch_in }.to raise_error('Insufficient balance')
   end
   it 'Issues penalty fare after touching in without touching out' do
-    expect { 2.times{sufficient_card.touch_in} }.to change{sufficient_card.balance}.by(-6)
+    expect { 2.times{sufficient_card.touch_in} }.to change{sufficient_card.balance}.by(-Journey::PENALTY_FARE)
   end
   it 'adds a station to journeys upon touch-in' do
     expect{ sufficient_card.touch_in(station) }.to change{ sufficient_card.journey.current_journey.size}.by(1)

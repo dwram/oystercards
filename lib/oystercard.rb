@@ -2,7 +2,7 @@ require_relative './station'
 require_relative './journey'
 
 class Oystercard
-  attr_reader :balance, :maximum_balance, :journeys, :journey, :entry_station
+  attr_reader :balance, :maximum_balance, :journeys, :journey, :entry_station, :card
   MAXIMUM_BALANCE = 90.00
   MINIMUM_BALANCE = 1.00
 
@@ -23,8 +23,8 @@ class Oystercard
 
   def touch_in(entry_station = Station.new)
     raise('Insufficient balance') if @balance < MINIMUM_BALANCE
-    @balance -= Journey::PENALTY_FARE if @journey.in_journey? # PENALTY FARE
 
+    @balance -= Journey::PENALTY_FARE if @journey.in_journey? # PENALTY FARE
     @journey.start_journey(entry_station)
   end
 

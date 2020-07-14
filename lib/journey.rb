@@ -1,3 +1,7 @@
+class Journeys
+
+end
+
 class Journey
   attr_reader :journeys, :current_journey, :entry_station
   PENALTY_FARE = 6
@@ -12,13 +16,12 @@ class Journey
   end
 
   def end_journey(exit_station)
-    @current_journey << (@exit_station = exit_station)
-    @journeys['Trips'] << @current_journey
+    @journeys['Trips'] << (@current_journey << (@exit_station = exit_station))
     @entry_station = nil
   end
 
   def calculate_fare(fare = 1.00)
-
+    @fare = fare
   end
 
   def in_journey?
