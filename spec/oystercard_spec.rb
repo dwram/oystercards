@@ -12,13 +12,17 @@ describe Oystercard do
   it { expect(subject.balance).to be_an(Float) }
   it { expect(subject.journey).to be_truthy }
   it { expect(subject.journey).to all(Station) }
+  it { expect(subject.journey.empty?).to be(true) }
+  it { expect(subject.journeys.empty?).to be(true) }
 end
 
 describe Oystercard do
   let(:card) { Oystercard.new }
+  let(:low_card) { Oystercard.new(10)}
   let(:sufficient_card) { Oystercard.new(70) }
   let(:poverty_card) { Oystercard.new(0.99) }
   let(:station) { double(:station) }
+
   it 'Adds an amount to the balance' do
     expect(card.top_up(25)).to eq(card.balance)
   end
@@ -28,27 +32,32 @@ describe Oystercard do
   it 'Raises an error upon exceeding maximum via top-up' do
     expect { card.top_up(100) }.to raise_error("Exceeded maximum balance: #{card.maximum_balance}")
   end
-  it 'Deducts £10 from the balance' do
-    card.top_up(10)
-    expect { card.touch_out(10) }.to change { card.balance }.by(-10.00)
+  it 'Deducts £10 from the balance after topping up £10' do
+    low_card.touch_in
+    expect { low_card.touch_out(10) }.to change { low_card.balance }.by(-10.00)
   end
   it 'Raises an error when there is not enough money' do
-    expect { card.touch_out(10) }.to raise_error('Balance is below zero')
+    low_card.touch_in
+    expect { low_card.touch_out(11) }.to raise_error('Balance is below zero')
   end
-  it 'Touch in with with > £1.00 balance and set card to in_use' do
+  it 'Touch in with with > £1.00 balance and set card to in_journey' do
     sufficient_card.touch_in
-    expect(sufficient_card.in_use).to eq(true)
+    expect(sufficient_card.in_journey?).to eq(true)
   end
-  it 'Touch out and deduce balance by £1.00 and sets card to not in_use' do
+  it 'Touch out and deduce balance by £1.00 and sets card to not in_journey' do
+    sufficient_card.touch_in
     expect { sufficient_card.touch_out }.to change { sufficient_card.balance }.by(-1.00)
-    expect(sufficient_card.in_use).to eq(false)
+    expect(sufficient_card.in_journey?).to eq(false)
   end
   it 'Card is in_journey when in use' do
     card = Oystercard.new(1.99)
     expect{ card.touch_in }.to change{ card.in_journey? }.to true
   end
-  it 'Does not allow touch in when balance is under £1.00' do
+  it 'Raises error when balance is under £1.00' do
     expect { poverty_card.touch_in }.to raise_error('Insufficient balance')
+  end
+  it 'Raises an error if attempting to touch in, after touching in without touching out' do
+    expect { 2.times {sufficient_card.touch_in} }.to raise_error('You have already touched in')
   end
   it 'adds a station to journeys upon touch-in' do
     expect{ sufficient_card.touch_in(station) }.to change{ sufficient_card.journey.size}.by(1)
@@ -59,7 +68,8 @@ describe Oystercard do
     expect{ sufficient_card.touch_out }.to change{ sufficient_card.entry_station }.to(nil)
   end
   it 'adds a new journey with entry and exit station value upon touch-out' do
-    pending("")
+    sufficient_card.touch_in
     expect{ sufficient_card.touch_out }.to change{ sufficient_card.journeys.size }.by(1)
   end
+
 end

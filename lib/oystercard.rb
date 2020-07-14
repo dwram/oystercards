@@ -1,15 +1,23 @@
 require_relative './station'
 
+class Journey
+
+  def new_journey(exit_station)
+    @journeys['Trips'] << [@entry_station, (@exit_station = exit_station)]
+  end
+
+end
+
 class Oystercard
-  attr_reader :balance, :maximum_balance, :in_use, :journey, :entry_station
+  attr_reader :balance, :maximum_balance, :journeys, :journey, :entry_station
   MAXIMUM_BALANCE = 90.00
   MINIMUM_BALANCE = 1.00
   def initialize(balance = 0.00, maximum = MAXIMUM_BALANCE)
     raise('Start balance exceeds your maximum') if
         (@balance = balance.round(2)) > (@maximum_balance = maximum.round(2))
 
-    @in_use = false
     @journey = []
+    @journeys = Hash.new { |k, v| k[v] = [] }
   end
 
   def top_up(amount)
@@ -19,17 +27,20 @@ class Oystercard
     @balance
   end
 
-  def touch_in(station = Station.new)
+  def touch_in(entry_station = Station.new)
     raise('Insufficient balance') if @balance < MINIMUM_BALANCE
+    raise('You have already touched in') if in_journey?
 
-    @journey << (@entry_station = station)
-    @in_use = true
+    @journey << (@entry_station = entry_station)
   end
 
-  def touch_out(amount = MINIMUM_BALANCE)
-    deduct(amount)
+  def touch_out(amount = MINIMUM_BALANCE, exit_station = Station.new)
+    raise('You cannot touch_out as you are not on a journey') unless in_journey?
+
+    fare(amount)
+    new_journey(exit_station)
+    @journey_end = Journey.new_journey(exit_station)
     @entry_station = nil
-    @in_use = false
   end
 
   def in_journey?
@@ -38,7 +49,11 @@ class Oystercard
 
   private
 
-  def deduct(amount)
+  def new_journey(exit_station)
+    @journeys['Trips'] << [@entry_station, (@exit_station = exit_station)]
+  end
+
+  def fare(amount)
     raise('Balance is below zero') if (@balance -= amount) < 0.00
 
     @balance
