@@ -2,16 +2,16 @@ require_relative './station'
 require_relative './journey'
 
 class Oystercard
-  attr_reader :balance, :maximum_balance, :journeys, :journey, :entry_station, :card
+  attr_reader :balance, :maximum_balance, :entry_station
+
   MAXIMUM_BALANCE = 90.00
   MINIMUM_BALANCE = 1.00
 
-  def initialize(balance = 0.00, maximum = MAXIMUM_BALANCE)
+  def initialize(balance = 0.00, maximum = MAXIMUM_BALANCE, journeys_class: JourneyLog)
     raise('Start balance exceeds your maximum') if
         (@balance = balance.round(2)) > (@maximum_balance = maximum.round(2))
 
-    @journey = Journey.new
-    @journeys = @journey.journeys
+    @journeys_class = journeys_class.new
   end
 
   def top_up(amount)
@@ -24,24 +24,28 @@ class Oystercard
   def touch_in(entry_station = Station.new)
     raise('Insufficient balance') if @balance < MINIMUM_BALANCE
 
-    @balance -= Journey::PENALTY_FARE if @journey.in_journey? # PENALTY FARE
-    @journey.start_journey(entry_station)
+    @journeys_class.start(entry_station)
   end
 
-  def touch_out(amount = MINIMUM_BALANCE, exit_station = Station.new)
-    raise('You cannot touch_out as you are not on a journey') unless @journey.in_journey?
-
+  def touch_out(exit_station = Station.new, amount = @journeys_class.send(:current_journey).calculate_fare)
+    @journeys_class.finish(exit_station)
     fare(amount)
-    @journey.end_journey(exit_station)
+  end
+
+  def journeys
+    @journeys = @journeys_class.history
+    @journeys.dup
   end
 
   private
 
-  def fare(amount = @journey.calculate_fare)
+  def fare(amount = MINIMUM_BALANCE)
     raise('Balance is below zero') if (@balance -= amount) < 0.00
 
     @balance
   end
+
+
 
 end
 
